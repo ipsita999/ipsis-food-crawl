@@ -90,10 +90,10 @@ main{max-width:660px;margin:0 auto;padding:18px 14px;position:relative;z-index:1
 .walk .wpencil{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.55;padding:2px 4px}
 .walkform{display:flex;gap:6px;justify-content:center;align-items:center;margin:2px 0 8px}
 .walkform input{font:inherit;font-size:.78rem;border:1.5px solid var(--peach);border-radius:999px;padding:6px 12px;outline:none;background:#fff;width:220px;text-align:center}
-.hooddiv{display:flex;align-items:center;gap:10px;margin:12px 4px 14px;color:var(--blue);
-  font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center}
-.hooddiv::before,.hooddiv::after{content:"";flex:1;height:0;border-top:2px dotted var(--blue-soft)}
-.hooddiv span{flex:none}
+.hooddiv{display:flex;align-items:center;gap:8px;margin:12px 4px 14px;color:var(--blue);
+  font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-align:center}
+.hooddiv::before,.hooddiv::after{content:"";flex:1 1 16px;min-width:10px;height:0;border-top:2px dotted var(--blue-soft)}
+.hooddiv span{flex:0 1 auto;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
 .sqhead{text-align:center;margin:30px 0 0}
 .sqhead .t{font-family:'Caveat',cursive;font-size:2rem;color:var(--coral);font-weight:700}
 .sqhead .d{font-size:.74rem;font-weight:600;color:var(--muted);letter-spacing:.03em;margin-top:-2px}
@@ -303,7 +303,7 @@ const CATEGORIES = [
 
 /* ---------- state ---------- */
 function freshState(){
-  return { v:SEED_VER, placesTs:0, places: JSON.parse(JSON.stringify(SEED_PLACES)),
+  return { v:SEED_VER, placesTs:0, resetTs:0, places: JSON.parse(JSON.stringify(SEED_PLACES)),
            ratings:{}, comments:{}, votes:{}, participants:[] };
 }
 let S = freshState();
@@ -321,7 +321,12 @@ function mergeUserMap(a,b){ // a=remote, b=local
 }
 function mergeState(local, remote){
   if(!remote || remote.v!==SEED_VER) return local;
+  // a reset on either side wipes the other's stale ratings/comments/votes
+  const rTs = Math.max(local.resetTs||0, remote.resetTs||0);
+  if((remote.resetTs||0) > (local.resetTs||0)) local = {...local, ratings:{}, comments:{}, votes:{}, resetTs:remote.resetTs};
+  if((local.resetTs||0) > (remote.resetTs||0)) remote = {...remote, ratings:{}, comments:{}, votes:{}, resetTs:local.resetTs};
   const out = freshState();
+  out.resetTs = rTs;
   const base = (remote.placesTs||0) > (local.placesTs||0) ? remote : local;
   const other = base===remote ? local : remote;
   out.placesTs = Math.max(remote.placesTs||0, local.placesTs||0);
@@ -372,6 +377,14 @@ async function pushRoom(){
     if(!r2.ok) throw new Error("save "+r2.status);
     saveLocal(); renderAll(); setSync("ok");
   }catch(e){ saveLocal(); setSync("off"); toast("⚠️ sync hiccup — saved on your phone, will retry"); }
+}
+async function forcePush(){
+  setSync("busy");
+  try{
+    const r = await fetch(ROOM, {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});
+    if(!r.ok) throw new Error("save "+r.status);
+    saveLocal(); renderAll(); setSync("ok");
+  }catch(e){ saveLocal(); setSync("off"); toast("⚠️ reset saved locally — tap ↻ when back online"); }
 }
 function queuePush(){ dirty=true; saveLocal(); clearTimeout(putTimer); putTimer=setTimeout(()=>{ dirty=false; pushRoom(); }, 900); }
 
@@ -430,6 +443,30 @@ window.importCode = function(){
     toast("merged "+d.n+"'s results in 🎉");
   }catch(e){ toast("⚠️ that code didn't parse — make sure the whole thing pasted"); }
 };
+window.resetMenu = function(){
+  const card=document.getElementById("joinCard");
+  document.getElementById("joinModal").style.display="flex";
+  card.innerHTML = `
+    <h2>reset the crawl 🧹</h2>
+    <p>this clears <b>everyone's</b> ratings, comments & award votes so the big day starts fresh. the itinerary (stops, order, walk times) stays. this syncs to the whole group, so only do it before the crawl!</p>
+    <label style="display:flex;align-items:center;gap:8px;justify-content:center;font-size:.82rem;font-weight:600;margin-bottom:10px">
+      <input type="checkbox" id="rmSpots"> also remove spots we added
+    </label>
+    <p style="font-size:.8rem;margin-bottom:6px">type <b>RESET</b> to confirm:</p>
+    <div class="joinrow"><input id="resetWord" placeholder="RESET" autocapitalize="characters"><button class="btn" onclick="doReset()">clear it</button></div>
+    <p style="margin-top:12px"><button class="btn ghost" onclick="document.getElementById('joinModal').style.display='none'">cancel</button></p>`;
+};
+window.doReset = function(){
+  const w=(document.getElementById("resetWord").value||"").trim().toUpperCase();
+  if(w!=="RESET"){ toast("type RESET to confirm 🧹"); return; }
+  const rmSpots = document.getElementById("rmSpots").checked;
+  S.ratings={}; S.comments={}; S.votes={}; S.resetTs=Date.now();
+  if(rmSpots){ S.places = S.places.filter(p=>!/^p[0-9]+$/.test(String(p.id))); S.placesTs=Date.now(); }
+  openCard=null;
+  document.getElementById("joinModal").style.display="none";
+  saveLocal(); renderAll(); forcePush();
+  toast("fresh start — ratings & votes cleared 🧹✨");
+};
 window.xferMenu = function(){
   const card=document.getElementById("joinCard");
   document.getElementById("joinModal").style.display="flex";
@@ -454,7 +491,7 @@ function renderSyncbar(){
   if(fnMissing){ lbl="sync offline — site needs the full folder deploy"; dot="off"; }
   else { lbl = syncStatus==="ok"?"synced with the group 💞":(syncStatus==="busy"?"syncing…":"offline — saving on your phone"); dot = syncStatus==="ok"?"ok":(syncStatus==="busy"?"busy":"off"); }
   document.getElementById("syncbar").innerHTML =
-    `<span class="dot ${dot}"></span> ${lbl} <span class="roomchip" onclick="xferMenu()">📋 result codes</span>`;
+    `<span class="dot ${dot}"></span> ${lbl} <span class="roomchip" onclick="xferMenu()">📋 result codes</span> <span class="roomchip" onclick="resetMenu()">⚙️ reset</span>`;
 }
 /* ---------- rendering (cards/awards/board) ---------- */
 function avgOf(pid){ const r=Object.values(S.ratings[pid]||{}); return r.length? r.reduce((a,b)=>a+b,0)/r.length : null; }
@@ -508,7 +545,7 @@ function renderPlaces(){
     html+=cardHTML(p,i+1);
     const next=mains[i+1];
     if(next && p.hood!==next.hood){
-      html+=`<div class="hooddiv"><span>🚶‍♀️ south to Elmhurst · ~20 min walk or M/R one stop 🌊</span></div>`;
+      html+=`<div class="hooddiv"><span>🚶‍♀️ south to Elmhurst · ~20 min walk or 1 stop on M/R 🌊</span></div>`;
     } else if(next){
       if(editingWalk===p.id){
         html+=`<div class="walkform"><input id="wi-${p.id}" value="${esc((p.walk||"").replace(/^🚶 /,""))}" placeholder="e.g. ~8 min to next" maxlength="40"><button class="btn" style="padding:6px 12px;font-size:.75rem" onclick="saveWalk('${p.id}')">save</button></div>`;
