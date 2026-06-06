@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ipsi's Birthday Food Crawl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#f0654a; --coral-soft:#f7a08c; --blue:#5b8fb9; --blue-soft:#cfe2ef;
+  --butter:#fdf3d8; --cream:#fffdf6; --peach:#ffe8da; --pink:#f2a3b8; --pink-soft:#fde4ea;
+  --ink:#4a4038; --muted:#a08c7d;
+  --shadow:0 6px 22px rgba(240,101,74,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Quicksand',sans-serif;color:var(--ink);
+  background:repeating-linear-gradient(0deg, var(--butter) 0 30px, var(--cream) 30px 62px);
+  background-attachment:fixed; min-height:100vh; padding-bottom:90px;
+}
+.floaty{position:fixed;font-size:15px;opacity:.5;animation:bob 8s ease-in-out infinite;pointer-events:none;z-index:0}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-12px) rotate(7deg)}}
+.squiggle{display:block;margin:6px auto;width:min(320px,70vw)}
+.bow{position:absolute;width:46px;opacity:.95}
+header{padding:30px 18px 6px;text-align:center;position:relative;z-index:1;max-width:680px;margin:0 auto}
+h1{font-family:'Caveat',cursive;font-weight:700;color:var(--coral);font-size:clamp(2.6rem,9vw,4rem);line-height:.98}
+.sub{font-size:.74rem;font-weight:700;color:var(--blue);margin-top:8px;letter-spacing:.22em;text-transform:uppercase}
+.ribbon{display:inline-block;background:var(--cream);border:1.5px solid var(--coral-soft);
+  border-radius:999px;padding:6px 18px;margin-top:12px;font-weight:700;font-size:.78rem;
+  color:var(--coral);letter-spacing:.04em;box-shadow:var(--shadow)}
+.youbar{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;font-size:1rem;font-weight:600}
+.youname{font-family:'Caveat',cursive;font-size:1.65rem;font-weight:700;color:var(--coral);line-height:1;margin:0 1px}
+.youbar button{border:1.5px solid var(--blue-soft);background:#fff;color:var(--blue);font:inherit;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;font-size:.85rem}
+.syncbar{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:8px;font-size:.74rem;font-weight:700;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:#bbb}
+.dot.ok{background:#5cbf7a}.dot.busy{background:#f0c75a}.dot.off{background:#e07a6a}
+.roomchip{background:#fff;border:1.5px dashed var(--blue);border-radius:999px;padding:3px 12px;color:var(--blue);cursor:pointer}
+nav{position:sticky;top:0;z-index:50;display:flex;gap:6px;justify-content:center;
+  padding:10px 8px;background:rgba(255,253,246,.93);backdrop-filter:blur(8px);border-bottom:1.5px solid var(--peach)}
+nav button{font:inherit;font-weight:700;font-size:.8rem;letter-spacing:.03em;border:1.5px solid transparent;background:#fff;
+  color:var(--muted);padding:9px 14px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow);transition:all .2s;white-space:nowrap}
+nav button.active{background:var(--coral);color:#fff;transform:translateY(-2px) rotate(-1deg);box-shadow:0 8px 20px rgba(240,101,74,.32)}
+main{max-width:660px;margin:0 auto;padding:18px 14px;position:relative;z-index:1}
+.tab{display:none;animation:pop .35s ease}
+.tab.active{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.legend{display:flex;gap:8px;justify-content:center;margin-bottom:16px;font-size:.74rem;font-weight:700;flex-wrap:wrap}
+.legend span{background:#fff;border-radius:999px;padding:5px 13px;box-shadow:var(--shadow);border:1px solid var(--peach)}
+.transit{background:linear-gradient(135deg,#fff 70%, var(--blue-soft) 170%);border:1.5px dashed var(--blue);
+  border-radius:22px 18px 24px 16px;padding:13px 16px;margin-bottom:18px;box-shadow:var(--shadow)}
+.transit-t{font-family:'Caveat',cursive;font-size:1.4rem;color:var(--blue);font-weight:700}
+.transit-b{font-size:.82rem;line-height:1.6;color:var(--ink);margin-top:3px}
+.transit-b b{color:var(--blue)}
+.card{background:#fff;border-radius:26px 22px 28px 20px;box-shadow:var(--shadow);margin-bottom:6px;
+  overflow:hidden;border:1.5px solid var(--peach);transition:border-color .2s;position:relative}
+.card.side{border-color:var(--blue-soft);background:linear-gradient(150deg,#fff 60%, #f3f8fc)}
+.card.custom{border-color:#cfe8cf;background:linear-gradient(150deg,#fff 60%, #eef7ee)}
+.card-head{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 13px;cursor:pointer}
+.stopnum{flex:none;width:40px;height:40px;border-radius:50% 46% 50% 48%;background:var(--cream);color:var(--coral);
+  font-family:'Caveat',cursive;font-weight:700;font-size:1.25rem;display:flex;align-items:center;justify-content:center;
+  border:1.8px dashed var(--coral-soft);margin-top:2px}
+.card.side .stopnum{color:var(--blue);border-color:var(--blue)}
+.callout{display:inline-block;background:var(--butter);border:1px solid #ecd9a0;color:#9a7416;
+  font-size:.72rem;font-weight:700;border-radius:999px;padding:3px 11px;margin-top:6px;letter-spacing:.03em}
+.card-title{font-size:1.02rem;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tag{font-size:.62rem;font-weight:700;padding:2.5px 9px;border-radius:999px;background:var(--blue-soft);color:#33648c;letter-spacing:.07em;text-transform:uppercase}
+.tag.must{background:var(--butter);color:#9a7416;border:1px solid #ecd9a0}
+.tag.quick{background:#e3f3e8;color:#3c7a3c}
+.tag.newt{background:#ddefdd;color:#3c7a3c}
+.tag.halal{background:#e1f3e8;color:#2e7d54;border:1px solid #bfe3cd}
+.tag.gf{background:#ece4ff;color:#6b4d9e;border:1px solid #d8c9f5}
+.meta{font-size:.79rem;color:var(--muted);margin-top:3px;line-height:1.5}
+.meta b{color:var(--coral)}
+.avg{margin-left:auto;flex:none;text-align:right;font-size:.74rem;font-weight:700;color:var(--muted)}
+.avg .num{font-size:1.05rem;color:var(--coral)}
+.mv{display:flex;flex-direction:column;gap:3px;margin-left:8px;flex:none}
+.mv button{width:30px;height:26px;border-radius:9px;border:1.5px solid var(--peach);background:var(--cream);color:var(--coral);font-size:.7rem;font-weight:700;cursor:pointer;line-height:1}
+.mv button:active{background:var(--peach)}
+.card-body{display:none;padding:0 16px 16px}
+.card-body::before{content:"";display:block;height:8px;margin-bottom:8px;
+  background:radial-gradient(circle at 8px -3px, transparent 7px, var(--peach) 7px, var(--peach) 8.5px, transparent 8.5px) repeat-x;
+  background-size:16px 10px}
+.card.open .card-body{display:block}
+.card.open{border-color:var(--coral)}
+.notes{background:var(--pink-soft);border-radius:16px 14px 18px 12px;padding:10px 13px;font-size:.85rem;margin:10px 0 0;line-height:1.55}
+.order{background:var(--butter);border:1px dashed #ecd9a0;border-radius:14px 18px 12px 16px;padding:10px 13px;font-size:.85rem;margin:10px 0 0;line-height:1.55}
+.order b{color:#9a7416;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px}
+.walk{text-align:center;font-size:.72rem;font-weight:700;color:var(--muted);margin:2px 0 8px;letter-spacing:.05em}
+.walk .wpencil{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.55;padding:2px 4px}
+.walkform{display:flex;gap:6px;justify-content:center;align-items:center;margin:2px 0 8px}
+.walkform input{font:inherit;font-size:.78rem;border:1.5px solid var(--peach);border-radius:999px;padding:6px 12px;outline:none;background:#fff;width:220px;text-align:center}
+.hooddiv{display:flex;align-items:center;gap:10px;margin:12px 4px 14px;color:var(--blue);
+  font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center}
+.hooddiv::before,.hooddiv::after{content:"";flex:1;height:0;border-top:2px dotted var(--blue-soft)}
+.hooddiv span{flex:none}
+.sqhead{text-align:center;margin:30px 0 0}
+.sqhead .t{font-family:'Caveat',cursive;font-size:2rem;color:var(--coral);font-weight:700}
+.sqhead .d{font-size:.74rem;font-weight:600;color:var(--muted);letter-spacing:.03em;margin-top:-2px}
+.hoodlabel{font-family:'Caveat',cursive;font-size:1.55rem;color:var(--blue);margin:16px 4px 8px;font-weight:700;display:flex;align-items:center;gap:6px}
+.hearts{display:flex;gap:6px;align-items:center;margin:6px 0 2px}
+.hearts button{font-size:1.7rem;background:none;border:none;cursor:pointer;filter:grayscale(1) opacity(.4);transition:transform .15s, filter .15s;padding:2px}
+.hearts button.lit{filter:none;transform:scale(1.12)}
+.hearts button:active{transform:scale(1.3)}
+.rate-label{font-size:.74rem;font-weight:700;color:var(--muted);margin-top:12px;letter-spacing:.06em;text-transform:uppercase}
+.raters{font-size:.74rem;color:#bdaa9b;margin-top:4px;line-height:1.5}
+.comments{margin-top:14px}
+.comment{background:var(--blue-soft);border-radius:14px 14px 14px 4px;padding:8px 12px;margin-bottom:8px;font-size:.85rem;line-height:1.45}
+.comment b{color:var(--blue);font-size:.76rem}
+.commentform{display:flex;gap:8px;margin-top:8px}
+.commentform input{flex:1;font:inherit;font-size:.85rem;border:1.5px solid var(--peach);border-radius:999px;padding:9px 14px;outline:none;background:var(--cream)}
+.commentform input:focus{border-color:var(--coral)}
+.btn{font:inherit;font-weight:700;border:none;border-radius:999px;cursor:pointer;
+  background:var(--coral);color:#fff;padding:9px 16px;font-size:.84rem;box-shadow:0 4px 12px rgba(240,101,74,.3);transition:transform .15s}
+.btn:active{transform:scale(.94)}
+.btn.blue{background:var(--blue)}
+.btn.ghost{background:#fff;color:var(--coral);border:1.5px solid var(--coral-soft);box-shadow:none}
+.award{background:#fff;border-radius:24px 20px 26px 18px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px;border:1.5px solid var(--peach)}
+.award h3{font-size:.98rem;display:flex;align-items:center;gap:8px}
+.award .winner{margin:8px 0;font-size:.88rem;background:linear-gradient(90deg,var(--butter),var(--peach));border-radius:14px;padding:10px 12px;font-weight:600}
+.award .winner small{display:block;font-weight:600;color:var(--muted);font-size:.73rem;margin-top:2px}
+.voterow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.voterow select{flex:1;min-width:160px;font:inherit;font-size:.85rem;border:1.5px solid var(--blue-soft);border-radius:14px;padding:9px 10px;background:#fff;color:var(--ink);outline:none}
+.customrow{display:none;flex:1 1 100%;gap:8px;margin-top:4px}
+.customrow.show{display:flex}
+.customrow input{flex:1;font:inherit;font-size:.85rem;border:1.5px solid var(--peach);border-radius:999px;padding:9px 14px;outline:none;background:var(--cream)}
+.lb-item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:20px 16px 22px 14px;box-shadow:var(--shadow);padding:12px 16px;margin-bottom:10px;border:1.5px solid var(--peach)}
+.lb-rank{font-size:1.4rem;flex:none;width:38px;text-align:center}
+.lb-name{font-weight:700;font-size:.93rem}
+.lb-sub{font-size:.74rem;color:var(--muted)}
+.lb-score{margin-left:auto;font-weight:700;color:var(--coral);font-size:1.05rem}
+.lb-bar{height:6px;border-radius:99px;background:var(--peach);margin-top:5px;overflow:hidden}
+.lb-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--coral),var(--pink));border-radius:99px}
+.addform{background:#fff;border-radius:26px 22px 28px 20px;box-shadow:var(--shadow);padding:18px;border:1.5px solid var(--peach)}
+.addform label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin:12px 0 4px;letter-spacing:.08em;text-transform:uppercase}
+.addform input, .addform select, .addform textarea{
+  width:100%;font:inherit;font-size:.9rem;border:1.5px solid var(--peach);border-radius:14px;padding:10px 12px;outline:none;background:var(--cream)}
+.addform input:focus,.addform textarea:focus{border-color:var(--coral)}
+.addform textarea{resize:vertical;min-height:60px}
+.modal{position:fixed;inset:0;background:rgba(74,64,56,.45);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-card{background:var(--cream);border-radius:30px 24px 32px 22px;padding:26px 22px;max-width:400px;width:100%;
+  text-align:center;box-shadow:0 20px 60px rgba(74,64,56,.3);border:2px solid var(--coral-soft);max-height:88vh;overflow:auto}
+.modal-card h2{font-family:'Caveat',cursive;color:var(--coral);font-size:2.1rem;margin-bottom:2px}
+.modal-card p{font-size:.82rem;color:var(--muted);margin-bottom:14px;letter-spacing:.02em;line-height:1.5}
+.namechips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.namechips button{font:inherit;font-weight:700;font-size:.85rem;background:#fff;border:1.5px solid var(--blue-soft);color:var(--blue);border-radius:999px;padding:8px 16px;cursor:pointer}
+.joinrow{display:flex;gap:8px}
+.joinrow input{flex:1;font:inherit;border:1.5px solid var(--peach);border-radius:999px;padding:10px 16px;outline:none;background:#fff;min-width:0}
+.bigcode{font-family:monospace;font-size:1.05rem;font-weight:700;background:#fff;border:2px dashed var(--blue);
+  border-radius:14px;padding:10px 12px;margin:10px 0;word-break:break-all;color:var(--blue);cursor:pointer}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--coral);color:#fff;font-weight:700;font-size:.85rem;padding:11px 20px;
+  border-radius:999px;box-shadow:0 10px 30px rgba(240,101,74,.4);transition:transform .3s;z-index:200;max-width:88vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;font-size:.85rem;color:#bdaa9b;padding:20px}
+.refresh{position:fixed;bottom:18px;right:16px;z-index:60;width:48px;height:48px;border-radius:50%;
+  border:1.5px solid var(--peach);background:#fff;box-shadow:var(--shadow);font-size:1.2rem;cursor:pointer;color:var(--coral)}
+.section-note{font-size:.8rem;color:var(--muted);text-align:center;margin:6px 0 14px;line-height:1.5}
+@media(min-width:520px){ nav button{font-size:.86rem;padding:10px 18px} }
+@media(max-width:560px){
+  .commentform input,.voterow select,.customrow input,.walkform input,
+  .addform input,.addform select,.addform textarea,.joinrow input,.bigcode{font-size:16px}
+}
+</style>
+</head>
+<body>
+<span class="floaty" style="top:13%;left:5%">🍊</span>
+<span class="floaty" style="top:24%;right:7%;animation-delay:1.2s">🎀</span>
+<span class="floaty" style="top:56%;left:4%;animation-delay:2.2s">🌊</span>
+<span class="floaty" style="top:72%;right:5%;animation-delay:.7s">☀️</span>
+<span class="floaty" style="top:42%;right:3%;animation-delay:3.1s">🌸</span>
+
+<header>
+  <svg class="bow" style="top:14px;left:6px" viewBox="0 0 60 44" fill="none">
+    <path d="M30 22C20 8 6 6 4 14c-2 8 14 14 26 8zm0 0c10-14 24-16 26-8 2 8-14 14-26 8z" stroke="#f0654a" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M27 24l-7 14m13-14l7 14" stroke="#f0654a" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+  <svg class="bow" style="top:14px;right:6px" viewBox="0 0 60 44" fill="none">
+    <path d="M30 22C20 8 6 6 4 14c-2 8 14 14 26 8zm0 0c10-14 24-16 26-8 2 8-14 14-26 8z" stroke="#5b8fb9" stroke-width="3.4" stroke-linecap="round"/>
+    <path d="M27 24l-7 14m13-14l7 14" stroke="#5b8fb9" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+  <svg class="squiggle" viewBox="0 0 300 14" fill="none" preserveAspectRatio="none">
+    <path d="M2 7c12-8 24 8 36 0s24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 44 0" stroke="#f0654a" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+  <h1>Ipsi's Birthday Food Crawl</h1>
+  <div class="sub">Jackson Heights — Elmhurst · Sat June 6</div>
+  <svg class="squiggle" viewBox="0 0 300 14" fill="none" preserveAspectRatio="none">
+    <path d="M2 7c12-8 24 8 36 0s24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 36 0 24 8 44 0" stroke="#5b8fb9" stroke-width="3" stroke-linecap="round"/>
+  </svg>
+  <div class="ribbon">tentative itinerary 💌 subject to snack-based detours</div>
+  <div class="youbar" id="youbar"></div>
+  <div class="syncbar" id="syncbar"></div>
+</header>
+
+<nav>
+  <button class="active" data-tab="itin">🗺️ crawl</button>
+  <button data-tab="awards">👑 awards</button>
+  <button data-tab="board">🏆 ranks</button>
+  <button data-tab="add">＋ add</button>
+</nav>
+
+<main>
+  <section class="tab active" id="tab-itin">
+    <div class="legend"><span style="color:var(--coral)">🍊 main quest</span><span style="color:var(--blue)">🌊 side quest</span><span style="color:#3c7a3c">🌱 added by us</span></div>
+    <div class="transit">
+      <div class="transit-t">🚇 getting there from JC</div>
+      <div class="transit-b">PATH to <b>WTC</b> → walk to the <b>E train</b> → <b>Jackson Heights–Roosevelt Av</b> → short walk to Momo Crave. <b>Leave by 2 PM</b> ✨</div>
+    </div>
+    <div id="placeList"></div>
+  </section>
+  <section class="tab" id="tab-awards">
+    <p class="section-note">cast your vote for each crown — pick a spot, or write in anything (a dish! a moment! the walk!) 👑</p>
+    <div id="awardList"></div>
+  </section>
+  <section class="tab" id="tab-board">
+    <p class="section-note">ranked by everyone's heart ratings 🧡</p>
+    <div id="lbList"></div>
+  </section>
+  <section class="tab" id="tab-add">
+    <div class="addform" id="addForm">
+      <h3 style="font-family:'Caveat',cursive;font-size:1.6rem;color:var(--coral)">found a bonus spot? add it!</h3>
+      <label>Name *</label><input id="f-name" placeholder="e.g. Mystery Mango Cart">
+      <label>Address</label><input id="f-addr" placeholder="street + neighborhood">
+      <label>Hours today</label><input id="f-hours" placeholder="e.g. 11 AM – 9 PM">
+      <label>Type</label>
+      <select id="f-type"><option value="custom">🌱 spontaneous find</option><option value="main">🍊 main quest</option><option value="side">🌊 side quest</option></select>
+      <label>Neighborhood</label>
+      <select id="f-hood"><option value="elm">Elmhurst</option><option value="jh">Jackson Heights</option><option value="other">bonus / elsewhere</option></select>
+      <label>Go-to order (optional)</label><input id="f-order" placeholder="what should we get?">
+      <label>Notes</label><textarea id="f-notes" placeholder="anything else to know?"></textarea>
+      <div style="margin-top:16px;text-align:center"><button class="btn" type="button" id="addBtn" onclick="window.addSpot&&window.addSpot()">add to the crawl ✨</button></div>
+    </div>
+  </section>
+</main>
+
+<button class="refresh" id="refreshBtn" title="refresh">↻</button>
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="joinModal" style="display:none">
+  <div class="modal-card" id="joinCard"></div>
+</div>
+
+<script>
+/* =========================================================
+   STANDALONE VERSION — works in any browser, no accounts.
+   Group sync via this site's own /api/room endpoint (Netlify Function + Blobs).
+   ========================================================= */
+const SEED_VER = 16;
+const SEED_PLACES = [
+ {id:"momocrave", name:"Momo Crave", emoji:"🥟", type:"main", hood:"jh", halal:true, gf:true, callout:"🚇 kick off ~3:30 — 8 min walk from the station", walk:"🚶 ~12 min to next", addr:"38-07 69th St, Woodside", hours:"Sat 12:00 PM – 9:45 PM",
+  order:"Chaat momos (the showstopper), tandoori momos, chili momos — veg versions of all three",
+  notes:"First stop! Cozy Himalayan café, fully halal 💚 🌾 GF picks: chicken or shrimp fried rice + chili chicken (the momos themselves are wheat). Seafood at the Thai spots later is the halal-friendly move too."},
+ {id:"lhasa", name:"Lhasa Fast Food", emoji:"🫕", type:"main", hood:"jh", gf:true, walk:"🚶 ~4 min to next", addr:"76-03 37th Ave, Jackson Heights", hours:"Sat 11:00 AM – 10:00 PM",
+  order:"Beef & chive momos (juicy!), veg momos, fried thenthuk, chili chicken",
+  notes:"Momo round two. Bar downstairs for an early drink. 🌾 GF picks: chili chicken, fried rice, laphing (mung-bean noodle), glass-noodle veg soup, fried potatoes (momos & thenthuk are wheat)."},
+ {id:"fuska", name:"Fuchka Carts", emoji:"🌶️", type:"main", hood:"jh", quick:true, halal:true, callout:"⚡ quick stop — eat fast, they get soggy!", addr:"37th Ave & 73rd St corner — Fuska House, Tong + more", hours:"Fuska House Sat 11:00 AM – 3:00 AM",
+  order:"Classic fuska + dahi fuska at Fuska House · Tong's egg-yolk-topped fuchka — taste-test both!",
+  notes:"A whole corner of fuchka trucks 💦 Standing-room street food, CASH ONLY. No lingering — fuchka waits for no one. Halal-friendly: it's veg/egg, no meat. (Raja side quest is right here for mithai!) 🌾 Note: shells are semolina/wheat — NOT gluten free."},
+ {id:"pata", name:"Pata Market", emoji:"🥭", type:"main", hood:"elm", gf:true, must:true, quick:true, callout:"⏰ get here by 6:15", walk:"🚶 ~3 min to next", addr:"81-16 Broadway, Elmhurst", hours:"Sat 9:30 AM – 9:00 PM",
+  order:"MANGO STICKY RICE ⭐ (reserved — just grab & pay!) + maybe pandan cake or coconut ice cream",
+  notes:"⚡ Quick grab-and-go — sticky rice is being held for us, so swing through and keep it moving. 🌾 GF + vegan: mango sticky rice & coconut desserts are naturally gluten free."},
+ {id:"chillhang", name:"Jai Sang Ma OR Uptop", emoji:"🍹", type:"main", hood:"elm", gf:true, callout:"🕔 JSM opens at 5 PM", walk:"🚶 ~9 min to next", addr:"Jai Sang Ma: 81-40 Broadway · Uptop: 75-32 Broadway 2nd fl", hours:"JSM Sat 5 PM – 2 AM · Uptop Sat 12 PM – 3:30 AM",
+  order:"JSM: lychee beer + crispy rice balls 🍺 · Uptop: happy-hour cocktails + Nepali snacks 🏓",
+  notes:"THE chill hang — pick one on vibes 💌 JSM = 90s Thailand decor + live music. Uptop = ping pong + late happy hour. 2 min apart, so we can always defect. 🌾 GF at JSM: larb, crispy-rice salad, papaya salad, sticky rice."},
+ {id:"zaabzaab", name:"Zaab Zaab", emoji:"🦆", type:"main", hood:"elm", gf:true, callout:"🍽️ dinner reso 7:45 — don't be late!", walk:"🚶 ~14 min to next", addr:"76-04 Woodside Ave, Elmhurst", hours:"Sat 9:30 AM – 11:00 PM",
+  order:"Duck larb (their legend), som tum papaya salad 🔥, grilled fish, sticky rice, morning glory for the veg girls",
+  notes:"DINNER 🍽️ NYT-loved Isaan Thai, Michelin Bib. Spice levels are REAL here. 🌾 GF heaven: papaya salad, larb, grilled fish, sticky rice (ask for no soy sauce)."},
+ {id:"tangra", name:"Tangra Masala", emoji:"🍜", type:"main", hood:"elm", halal:true, callout:"⏰ arrive by 9:30 — kitchen closes 10:30", addr:"87-09 Grand Ave, Elmhurst", hours:"Sat 12:00 PM – 10:30 PM ⏰",
+  order:"Chili paneer, gobi manchurian, chicken lollipop, hakka noodles, hot & sour soup",
+  notes:"Late-night Indo-Chinese finale! Bring cash — card machine is iffy. 🌾 Tricky for GF: noodles & soy have gluten — plain paneer dishes + rice are the safer bets."},
+ {id:"phayul", name:"Phayul", emoji:"🥢", type:"side", hood:"jh", gf:true, addr:"37-65 74th St, Jackson Heights", hours:"Sat 11:00 AM – 10:30 PM",
+  order:"Steamed beef momos + potato-veg momos, loaded with their chili sauce; spicy beef tongue for the brave",
+  notes:"Beloved Tibetan spot 1 min from the 7 station — perfect for a bonus momo round. Cash only. Not halal. 🌾 GF picks: chicken shapta + rice, laphing, cucumber salad, fried potato."},
+ {id:"raja", name:"Raja Sweets", emoji:"🍬", type:"side", hood:"jh", halal:true, gf:true, addr:"72-31 37th Ave, Jackson Heights", hours:"Sat 10:00 AM – 10:00 PM",
+  order:"The giant Raja samosa (split it!), jalebi, silver-leaf sweets, mango lassi",
+  notes:"All-vegetarian mithai + chaat. Steps from the fuchka carts. (Still finalizing — alternatives nearby: Al Naimat, Abdullah, Maharaja.) 🌾 Some GF sweets (rasmalai, barfi, kaju katli) — but samosa, jalebi & pani puri are wheat."},
+ {id:"angel", name:"Angel (takeout)", emoji:"😇", type:"side", hood:"jh", halal:true, gf:true, addr:"75-18 37th Ave, Jackson Heights", hours:"Sat 12:00 PM – 10:00 PM",
+  order:"Paneer (best in NYC per regulars), lotus kofta, dum biryani, amritsari lassi",
+  notes:"100% halal Indian — tons of veg & vegan options plus goat/chicken biryani & tandoori. Grab takeout if timing allows! Call ahead: +1 347-848-0098. 🌾 GF: biryani, paneer & dal curries, tandoori — skip naan/puri (wheat)."},
+ {id:"khaokang", name:"Khao Kang", emoji:"🍛", type:"side", hood:"elm", gf:true, callout:"⏰ before 7 PM only!", addr:"76-20 Woodside Ave, Elmhurst", hours:"Sat 11:00 AM – 7:00 PM",
+  order:"Rice + 3-curry combo (point at whatever looks good) + pumpkin sankaya dessert",
+  notes:"Steam-table Thai, cafeteria style straight out of Bangkok. 🌾 GF-friendly: curries over rice + the pumpkin sankaya custard."},
+ {id:"khaonom", name:"Khao Nom", emoji:"🧇", type:"side", hood:"elm", gf:true, addr:"42-06 77th St, Elmhurst", hours:"Sat 11:00 AM – 9:00 PM",
+  order:"Thai coconut pancakes, pandan waffle with young coconut, Thai milk tea",
+  notes:"Khao Kang's dessert-café sister 💕 Cute sit-down for a sweet break. 🌾 Many Thai desserts are rice-flour based (GF) — ask which."},
+ {id:"thaithai", name:"Thai Thai Grocery", emoji:"🍌", type:"side", hood:"elm", gf:true, addr:"76-13 Woodside Ave, Elmhurst", hours:"Sat ~12:00 – 10:00 PM",
+  order:"Sesame fried banana + whatever the owner says — trust her recs!",
+  notes:"Tiny Thai grocery with hard-to-find ingredients to take home. 🌾 The fried banana uses rice-flour batter — usually GF."}
+];
+const HOOD_NAME = {jh:"🍊 Jackson Heights", elm:"🌊 Elmhurst", other:"🌱 bonus finds"};
+const CATEGORIES = [
+ {id:"overall", label:"Best Overall", emoji:"👑"},
+ {id:"dessert", label:"Best Dessert", emoji:"🍰"},
+ {id:"momos", label:"Best Momos", emoji:"🥟"},
+ {id:"newfood", label:"Best New Discovery", emoji:"✨"},
+ {id:"vibes", label:"Best Vibes", emoji:"🪩"},
+ {id:"spicy", label:"Spiciest Bite", emoji:"🔥"},
+ {id:"value", label:"Best Bang for Buck", emoji:"💸"},
+ {id:"drink", label:"Best Drink", emoji:"🍹"},
+ {id:"sweetest", label:"Cutest Spot", emoji:"🎀"}
+];
+
+/* ---------- state ---------- */
+function freshState(){
+  return { v:SEED_VER, placesTs:0, places: JSON.parse(JSON.stringify(SEED_PLACES)),
+           ratings:{}, comments:{}, votes:{}, participants:[] };
+}
+let S = freshState();
+let me = localStorage.getItem("crawl-me") || null;
+let roomId = localStorage.getItem("crawl-room") || null;
+let openCard=null, editingWalk=null, syncStatus="off", dirty=false, putTimer=null;
+
+const ROOM = "/api/room";   // same-origin sync — ad-blocker-proof, no codes
+
+/* ---------- merge (so nobody's taps get lost) ---------- */
+function mergeUserMap(a,b){ // a=remote, b=local
+  const out={...(a||{})};
+  for(const [u,v] of Object.entries(b||{})){ if(!(u in out) || u===me) out[u]=v; }
+  return out;
+}
+function mergeState(local, remote){
+  if(!remote || remote.v!==SEED_VER) return local;
+  const out = freshState();
+  const base = (remote.placesTs||0) > (local.placesTs||0) ? remote : local;
+  const other = base===remote ? local : remote;
+  out.placesTs = Math.max(remote.placesTs||0, local.placesTs||0);
+  out.places = JSON.parse(JSON.stringify(base.places||SEED_PLACES));
+  for(const p of (other.places||[])) if(!out.places.find(x=>x.id===p.id)) out.places.push(p);
+  const allPids = new Set([...Object.keys(local.ratings||{}),...Object.keys(remote.ratings||{})]);
+  for(const pid of allPids) out.ratings[pid] = mergeUserMap(remote.ratings?.[pid], local.ratings?.[pid]);
+  const allCats = new Set([...Object.keys(local.votes||{}),...Object.keys(remote.votes||{})]);
+  for(const c of allCats) out.votes[c] = mergeUserMap(remote.votes?.[c], local.votes?.[c]);
+  const cPids = new Set([...Object.keys(local.comments||{}),...Object.keys(remote.comments||{})]);
+  for(const pid of cPids){
+    const seen=new Set(); out.comments[pid]=[];
+    for(const c of [...(remote.comments?.[pid]||[]),...(local.comments?.[pid]||[])]){
+      const k=c.t+"|"+c.name; if(!seen.has(k)){ seen.add(k); out.comments[pid].push(c); }
+    }
+    out.comments[pid].sort((a,b)=>a.t-b.t);
+  }
+  out.participants = [...new Set([...(remote.participants||[]),...(local.participants||[])])];
+  return out;
+}
+
+
+function saveLocal(){ try{ localStorage.setItem("crawl-state", JSON.stringify(S)); }catch(e){} }
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem("crawl-state");
+    if(raw){ const st=JSON.parse(raw); if(st.v===SEED_VER) S=st; }
+  }catch(e){}
+}
+function setSync(st){ syncStatus=st; renderSyncbar(); }
+let fnMissing = false;
+async function pullRoom(){
+  setSync("busy");
+  try{
+    const r = await fetch(ROOM, {headers:{"Accept":"application/json"},cache:"no-store"});
+    if(r.status===404){ fnMissing=true; setSync("off"); return; }
+    if(!r.ok) throw new Error("fetch "+r.status);
+    const remote = await r.json();
+    if(remote) S = mergeState(S, remote);
+    saveLocal(); renderAll(); setSync("ok");
+  }catch(e){ setSync("off"); }
+}
+async function pushRoom(){
+  setSync("busy");
+  try{
+    try{ const r=await fetch(ROOM,{headers:{"Accept":"application/json"},cache:"no-store"}); if(r.ok){ const remote=await r.json(); if(remote) S=mergeState(S,remote); } }catch(e){}
+    const r2 = await fetch(ROOM, {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(S)});
+    if(!r2.ok) throw new Error("save "+r2.status);
+    saveLocal(); renderAll(); setSync("ok");
+  }catch(e){ saveLocal(); setSync("off"); toast("⚠️ sync hiccup — saved on your phone, will retry"); }
+}
+function queuePush(){ dirty=true; saveLocal(); clearTimeout(putTimer); putTimer=setTimeout(()=>{ dirty=false; pushRoom(); }, 900); }
+
+/* ---------- join UI ---------- */
+function showJoin(step){
+  const card=document.getElementById("joinCard");
+  document.getElementById("joinModal").style.display="flex";
+  const chips=(S.participants||[]).map(n=>`<button onclick="pickName('${esc(n)}')">${esc(n)}</button>`).join("");
+  card.innerHTML = `
+    <h2>who's this cutie?</h2>
+    <p>pick your name or join the party 🎉</p>
+    <div class="namechips">${chips}</div>
+    <div class="joinrow"><input id="joinName" placeholder="your name" maxlength="20"><button class="btn" onclick="joinNew()">join 🧡</button></div>`;
+  const ji=document.getElementById("joinName");
+  ji.addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault(); joinNew();} });
+}
+window.pickName = function(n){ me=n; localStorage.setItem("crawl-me",n); afterJoin(); };
+window.joinNew = function(){
+  const v=document.getElementById("joinName").value.trim(); if(!v) return;
+  me=v; localStorage.setItem("crawl-me",v);
+  if(!S.participants.includes(v)){ S.participants.push(v); queuePush(); }
+  afterJoin();
+};
+function afterJoin(){
+  document.getElementById("joinModal").style.display="none";
+  renderYoubar(); renderAll();
+}
+window.switchUser = function(){ showJoin("name"); };
+window.exportMine = function(){
+  if(!me){ showJoin("name"); return; }
+  const mine={n:me, r:{}, v:{}, c:{}};
+  for(const [pid,m] of Object.entries(S.ratings)) if(m[me]!=null) mine.r[pid]=m[me];
+  for(const [cat,m] of Object.entries(S.votes)) if(m[me]!=null) mine.v[cat]=m[me];
+  for(const [pid,arr] of Object.entries(S.comments)){ const own=(arr||[]).filter(c=>c.name===me); if(own.length) mine.c[pid]=own; }
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(mine))));
+  const box=document.getElementById("xferOut"); if(box){ box.value=code; box.select&&box.select(); }
+  if(navigator.clipboard) navigator.clipboard.writeText(code).then(()=>toast("your results code is copied 📋 — paste it in the group chat!")).catch(()=>toast("copy the code from the box 📋"));
+  else toast("copy the code from the box 📋");
+};
+window.importCode = function(){
+  try{
+    const raw=document.getElementById("xferIn").value.trim();
+    if(!raw){ toast("paste a friend's code first ✍️"); return; }
+    const d=JSON.parse(decodeURIComponent(escape(atob(raw))));
+    if(!d.n) throw new Error("bad code");
+    for(const [pid,st] of Object.entries(d.r||{})) (S.ratings[pid]=S.ratings[pid]||{})[d.n]=st;
+    for(const [cat,val] of Object.entries(d.v||{})) (S.votes[cat]=S.votes[cat]||{})[d.n]=val;
+    for(const [pid,arr] of Object.entries(d.c||{})){
+      S.comments[pid]=S.comments[pid]||[];
+      for(const c of arr) if(!S.comments[pid].find(x=>x.t===c.t&&x.name===c.name)) S.comments[pid].push(c);
+      S.comments[pid].sort((a,b)=>a.t-b.t);
+    }
+    if(!S.participants.includes(d.n)) S.participants.push(d.n);
+    saveLocal(); renderAll(); queuePush();
+    document.getElementById("xferIn").value="";
+    toast("merged "+d.n+"'s results in 🎉");
+  }catch(e){ toast("⚠️ that code didn't parse — make sure the whole thing pasted"); }
+};
+window.xferMenu = function(){
+  const card=document.getElementById("joinCard");
+  document.getElementById("joinModal").style.display="flex";
+  card.innerHTML = `
+    <h2>result codes 📋</h2>
+    <p>no sync? no problem. tap export to copy <b>your</b> ratings/votes as a code, paste it in the group chat, and paste each friend's code below to merge everyone onto one phone.</p>
+    <button class="btn" style="width:100%" onclick="exportMine()">📤 export my results</button>
+    <textarea id="xferOut" readonly style="width:100%;margin-top:8px;font:600 .7rem monospace;border:1.5px dashed var(--blue);border-radius:12px;padding:8px;background:#fff;min-height:54px" placeholder="your code appears here"></textarea>
+    <p style="margin:12px 0 6px">— merge a friend's code —</p>
+    <textarea id="xferIn" style="width:100%;font:600 .7rem monospace;border:1.5px solid var(--peach);border-radius:12px;padding:8px;background:#fff;min-height:54px" placeholder="paste their code"></textarea>
+    <button class="btn blue" style="margin-top:8px" onclick="importCode()">merge it in 🧡</button>
+    <p style="margin-top:12px"><button class="btn ghost" onclick="document.getElementById('joinModal').style.display='none'">done</button></p>`;
+};
+
+function renderYoubar(){
+  document.getElementById("youbar").innerHTML = me
+    ? `<span>hi <span class="youname">${esc(me)}</span> 🧡</span> <button onclick="switchUser()">switch</button>`
+    : "";
+}
+function renderSyncbar(){
+  let lbl, dot;
+  if(fnMissing){ lbl="sync offline — site needs the full folder deploy"; dot="off"; }
+  else { lbl = syncStatus==="ok"?"synced with the group 💞":(syncStatus==="busy"?"syncing…":"offline — saving on your phone"); dot = syncStatus==="ok"?"ok":(syncStatus==="busy"?"busy":"off"); }
+  document.getElementById("syncbar").innerHTML =
+    `<span class="dot ${dot}"></span> ${lbl} <span class="roomchip" onclick="xferMenu()">📋 result codes</span>`;
+}
+/* ---------- rendering (cards/awards/board) ---------- */
+function avgOf(pid){ const r=Object.values(S.ratings[pid]||{}); return r.length? r.reduce((a,b)=>a+b,0)/r.length : null; }
+function cardHTML(p, num){
+  const a=avgOf(p.id);
+  const myStars = me ? (S.ratings[p.id]||{})[me]||0 : 0;
+  const cls = p.type==="side"?"side":(p.type==="custom"?"custom":"");
+  const cmts = S.comments[p.id]||[];
+  const nR = Object.keys(S.ratings[p.id]||{}).length;
+  return `
+  <div class="card ${cls} ${openCard===p.id?'open':''}">
+    <div class="card-head" onclick="toggleCard('${p.id}')">
+      <div class="stopnum">${typeof num==="number"?num:"✦"}</div>
+      <div style="min-width:0">
+        <div class="card-title">${p.emoji} ${esc(p.name)}
+          ${p.must?'<span class="tag must">⭐ priority</span>':''}
+          ${p.quick?'<span class="tag quick">⚡ quick stop</span>':''}
+          ${p.halal?'<span class="tag halal">☪ halal</span>':''}
+          ${p.gf?'<span class="tag gf">🌾 GF-friendly</span>':''}
+          ${p.type==='side'?'<span class="tag">side quest</span>':''}
+          ${p.type==='custom'?'<span class="tag newt">new find</span>':''}
+        </div>
+        <div class="meta">📍 ${esc(p.addr||"")}<br>🕐 <b>${esc(p.hours||"hours tbd")}</b></div>
+        ${p.callout?`<div class="callout">${esc(p.callout)}</div>`:""}
+      </div>
+      <div class="avg">${a?`<span class="num">${a.toFixed(1)}</span> 🧡<br><span>${nR} rating${nR>1?"s":""}</span>`:"<span>not rated<br>yet 🤍</span>"}</div>
+      ${(typeof num==="number")?`<div class="mv"><button onclick="event.stopPropagation();moveStop('${p.id}',-1)">▲</button><button onclick="event.stopPropagation();moveStop('${p.id}',1)">▼</button></div>`:""}
+    </div>
+    <div class="card-body">
+      ${p.order?`<div class="order"><b>💡 go-to order</b>${esc(p.order)}</div>`:""}
+      ${p.notes?`<div class="notes">💌 ${esc(p.notes)}</div>`:""}
+      <div class="rate-label">your rating${me?` (${esc(me)})`:""}</div>
+      <div class="hearts">${[1,2,3,4,5].map(i=>`<button class="${i<=myStars?'lit':''}" onclick="rate('${p.id}',${i})">🧡</button>`).join("")}</div>
+      <div class="raters">${Object.entries(S.ratings[p.id]||{}).map(([n,s])=>`${esc(n)}: ${s}🧡`).join(" · ")||""}</div>
+      <div class="comments">
+        ${cmts.map(c=>`<div class="comment"><b>${esc(c.name)}</b> · ${esc(c.text)}</div>`).join("")}
+        <div class="commentform">
+          <input id="ci-${p.id}" placeholder="leave a lil note…" maxlength="160" onkeydown="if(event.key==='Enter'){event.preventDefault();postComment('${p.id}')}">
+          <button class="btn" onclick="postComment('${p.id}')">💬</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function renderPlaces(){
+  const el=document.getElementById("placeList");
+  const mains=S.places.filter(p=>p.type==="main");
+  const sides=S.places.filter(p=>p.type!=="main");
+  let html="";
+  mains.forEach((p,i)=>{
+    html+=cardHTML(p,i+1);
+    const next=mains[i+1];
+    if(next && p.hood!==next.hood){
+      html+=`<div class="hooddiv"><span>🚶‍♀️ south to Elmhurst · ~20 min walk or M/R one stop 🌊</span></div>`;
+    } else if(next){
+      if(editingWalk===p.id){
+        html+=`<div class="walkform"><input id="wi-${p.id}" value="${esc((p.walk||"").replace(/^🚶 /,""))}" placeholder="e.g. ~8 min to next" maxlength="40"><button class="btn" style="padding:6px 12px;font-size:.75rem" onclick="saveWalk('${p.id}')">save</button></div>`;
+      } else {
+        html+=`<div class="walk">${esc(p.walk||"🚶 add walk time")} <button class="wpencil" onclick="editWalk('${p.id}')">✏️</button></div>`;
+      }
+    } else { html+=`<div style="height:10px"></div>`; }
+  });
+  html+=`<div class="sqhead"><div class="t">side quests ✨</div><div class="d">optional detours — squeeze in if there's time</div></div>`;
+  for(const hood of ["jh","elm","other"]){
+    const group=sides.filter(p=>(p.hood||"other")===hood);
+    if(!group.length) continue;
+    html+=`<div class="hoodlabel">${HOOD_NAME[hood]}</div>`;
+    html+=group.map(p=>cardHTML(p)+`<div style="height:10px"></div>`).join("");
+  }
+  el.innerHTML=html;
+}
+function voteLabel(val){
+  if(val && val.startsWith("custom:")) return "✍️ "+val.slice(7);
+  const p=S.places.find(x=>x.id===val);
+  return p?`${p.emoji} ${p.name}`:val;
+}
+function renderAwards(){
+  const el=document.getElementById("awardList");
+  el.innerHTML=CATEGORIES.map(c=>{
+    const v=S.votes[c.id]||{};
+    const tally={}; Object.values(v).forEach(val=>{tally[val]=(tally[val]||0)+1;});
+    const sorted=Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+    const winner=sorted[0];
+    const myVote=me?v[me]:null;
+    const myIsCustom=myVote&&myVote.startsWith("custom:");
+    return `
+    <div class="award">
+      <h3>${c.emoji} ${c.label}</h3>
+      ${winner?`<div class="winner">👑 <b>${esc(voteLabel(winner[0]))}</b> — ${winner[1]} vote${winner[1]>1?"s":""}
+        <small>${sorted.slice(1).map(([val,n])=>`${esc(voteLabel(val))} (${n})`).join(" · ")}</small></div>`
+      :`<div class="winner" style="opacity:.6">no votes yet — be the first! ✨</div>`}
+      <div class="voterow">
+        <select id="vote-${c.id}" onchange="document.getElementById('cw-${c.id}').classList.toggle('show', this.value==='__custom')">
+          <option value="">choose…</option>
+          ${S.places.map(p=>`<option value="${p.id}" ${myVote===p.id?"selected":""}>${p.emoji} ${esc(p.name)}</option>`).join("")}
+          <option value="__custom" ${myIsCustom?"selected":""}>✍️ write in something else…</option>
+        </select>
+        <button class="btn blue" onclick="castVote('${c.id}')">vote</button>
+        <div class="customrow ${myIsCustom?"show":""}" id="cw-${c.id}">
+          <input id="ct-${c.id}" placeholder="e.g. the walk between stops 😂" maxlength="50" value="${myIsCustom?esc(myVote.slice(7)):""}">
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+function renderBoard(){
+  const el=document.getElementById("lbList");
+  const rows=S.places.map(p=>{
+    const r=Object.values(S.ratings[p.id]||{});
+    return {p, avg:r.length? r.reduce((a,b)=>a+b,0)/r.length:0, n:r.length};
+  }).filter(x=>x.n>0).sort((a,b)=>b.avg-a.avg||b.n-a.n);
+  if(!rows.length){ el.innerHTML=`<div class="empty">no ratings yet — go eat something!! 🍴🧡</div>`; return; }
+  const medals=["🥇","🥈","🥉"];
+  el.innerHTML=rows.map((x,i)=>`
+    <div class="lb-item">
+      <div class="lb-rank">${medals[i]||"🧡"}</div>
+      <div style="flex:1;min-width:0">
+        <div class="lb-name">${x.p.emoji} ${esc(x.p.name)}</div>
+        <div class="lb-sub">${x.n} rating${x.n>1?"s":""}</div>
+        <div class="lb-bar"><i style="width:${x.avg/5*100}%"></i></div>
+      </div>
+      <div class="lb-score">${x.avg.toFixed(2)}</div>
+    </div>`).join("");
+}
+function renderAll(){ renderPlaces(); renderAwards(); renderBoard(); renderSyncbar(); }
+
+/* ---------- actions ---------- */
+window.toggleCard=function(id){ openCard=openCard===id?null:id; renderPlaces(); };
+window.rate=function(pid,stars){
+  if(!me){ showJoin("name"); return; }
+  (S.ratings[pid]=S.ratings[pid]||{})[me]=stars;
+  renderAll(); queuePush(); toast(stars+"🧡 saved!");
+};
+window.postComment=function(pid){
+  if(!me){ showJoin("name"); return; }
+  const input=document.getElementById("ci-"+pid);
+  const text=input.value.trim(); if(!text) return;
+  (S.comments[pid]=S.comments[pid]||[]).push({name:me,text,t:Date.now()});
+  input.value=""; renderPlaces(); queuePush(); toast("note posted 💌");
+};
+window.castVote=function(cid){
+  if(!me){ showJoin("name"); return; }
+  const sel=document.getElementById("vote-"+cid);
+  let val=sel.value; if(!val) return;
+  if(val==="__custom"){
+    const t=document.getElementById("ct-"+cid).value.trim();
+    if(!t){ toast("type your write-in first ✍️"); return; }
+    val="custom:"+t;
+  }
+  (S.votes[cid]=S.votes[cid]||{})[me]=val;
+  renderAwards(); queuePush(); toast("vote cast 👑");
+};
+window.moveStop=function(pid,dir){
+  try{
+    const mains=S.places.filter(p=>p.type==="main");
+    const idx=mains.findIndex(p=>p.id===pid);
+    const j=idx+dir;
+    if(idx<0||j<0||j>=mains.length) return;
+    const gi=S.places.indexOf(mains[idx]), gj=S.places.indexOf(mains[j]);
+    [S.places[gi],S.places[gj]]=[S.places[gj],S.places[gi]];
+    S.placesTs=Date.now();
+    renderPlaces(); queuePush(); toast("moved! check the walk times ✏️");
+  }catch(e){ toast("⚠️ "+e.message); }
+};
+window.editWalk=function(pid){ editingWalk=pid; renderPlaces(); };
+window.saveWalk=function(pid){
+  try{
+    const v=document.getElementById("wi-"+pid).value.trim();
+    const p=S.places.find(x=>x.id===pid);
+    p.walk = v ? (v.startsWith("🚶")? v : "🚶 "+v) : "";
+    S.placesTs=Date.now(); editingWalk=null;
+    renderPlaces(); queuePush(); toast("walk time saved 🚶");
+  }catch(e){ toast("⚠️ "+e.message); }
+};
+window.addSpot=function(){
+  try{
+    if(!me){ showJoin("name"); return; }
+    const name=document.getElementById("f-name").value.trim();
+    if(!name){ toast("give it a name first ✍️"); return; }
+    const np={
+      id:"p"+Date.now(), name, emoji:"🌱",
+      type:document.getElementById("f-type").value,
+      hood:document.getElementById("f-hood").value,
+      addr:document.getElementById("f-addr").value.trim(),
+      hours:document.getElementById("f-hours").value.trim(),
+      order:document.getElementById("f-order").value.trim(),
+      notes:(document.getElementById("f-notes").value.trim()+" (added by "+me+")").trim()
+    };
+    S.places.push(np); S.placesTs=Date.now();
+    for(const fid of ["f-name","f-addr","f-hours","f-order","f-notes"]) document.getElementById(fid).value="";
+    renderAll(); queuePush(); toast("spot added 🌱✨");
+    document.querySelector('nav button[data-tab="itin"]').click();
+  }catch(e){ toast("⚠️ add failed: "+e.message); }
+};
+
+/* ---------- nav / utils / boot ---------- */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById("tab-"+b.dataset.tab).classList.add("active");
+    renderAll();
+  });
+});
+document.getElementById("refreshBtn").addEventListener("click", ()=>{ toast("refreshing 💫"); pullRoom(); });
+function esc(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+let toastT;
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400); }
+window.addEventListener("error", ev=>{ try{ toast("⚠️ "+(ev.message||"script error")); }catch(_){} });
+
+(async function boot(){
+  loadLocal();
+  renderYoubar(); renderAll();
+  await pullRoom();
+  if(!me) showJoin("name");
+  setInterval(()=>{ if(!dirty) pullRoom(); }, 10000);
+})();
+</script>
+</body>
+</html>
